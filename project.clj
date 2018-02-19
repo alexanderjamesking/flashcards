@@ -19,6 +19,7 @@
   :source-paths ["src/clj" "src/cljc"]
   :resource-paths ["resources"]
   :test-paths ["test/clj" "test/cljc"]
+  :figwheel {:server-logfile "target/figwheel_server.log"}
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src/cljc" "src/cljs"]
                         :figwheel true
