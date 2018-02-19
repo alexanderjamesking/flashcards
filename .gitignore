@@ -13,4 +13,4 @@ pom.xml.asc
 /dev/resources/local.edn
 /dev/src/local.clj
 .cljs_rhino_repl/
-figwhel_server.log
+figwheel_server.log

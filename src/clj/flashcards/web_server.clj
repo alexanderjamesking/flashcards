@@ -11,17 +11,18 @@
 (def api-routes
   ["/status" (as-resource "Ping OK!")])
 
-(def routes
+(defn routes [app-js]
   ["/"
    [["" (resource
          {:methods {:get {:produces "text/html"
                           :response (fn [ctx]
                                       (html
+                                       [:head
+                                        [:title "My App"]]
                                        [:body
-                                        [:h1 "Hello!"]
                                         [:div#app
-                                         [:h2 "App in dev mode"]]
-                                        (include-js "/public/cljs/dev/main.js")]))}}})]
+                                         [:h2 "App to go here"]]
+                                        (include-js app-js)]))}}})]
     ["public" (new-classpath-resource "public")]
     ["about" (as-resource "About me...")]
     ["api" (swaggered api-routes
@@ -31,5 +32,5 @@
                        :basePath "/api"})]]
    [true not-found]])
 
-(defn start-server [port]
-  (listener routes {:port port}))
+(defn start-server [port app-js]
+  (listener (routes app-js) {:port port}))

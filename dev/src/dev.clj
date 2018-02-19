@@ -8,11 +8,10 @@
             [flashcards.system :refer :all]
             [figwheel-sidecar.repl-api]))
 
-(def config {:web-server {:port 3000}})
+(def config {:web-server {:port 3000
+                          :app-js "/public/cljs/dev/main.js"}})
 
 (integrant.repl/set-prep! (constantly config))
-
-
 
 (defn start-figwheel! []
   (figwheel-sidecar.repl-api/start-figwheel! "dev" "devcards-test"))

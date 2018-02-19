@@ -15,6 +15,7 @@
                    :dependencies [[integrant/repl "0.3.0"]
                                   [com.cemerick/piggieback "0.2.1"]
                                   [figwheel-sidecar "0.5.14"]]}}
+  :clean-targets ^{:protect false} ["target" "resources/public/cljs"]
   :source-paths ["src/clj" "src/cljc"]
   :resource-paths ["resources"]
   :test-paths ["test/clj" "test/cljc"]
