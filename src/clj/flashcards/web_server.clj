@@ -9,13 +9,22 @@
    :body "Not found"})
 
 (def api-routes
-  ["/status" (as-resource "Ping OK!")])
+  ["/"
+   [["status" (as-resource "Ping OK!")]
+    ["json" (resource
+             {:produces "application/json"
+              :methods {:get {:response (fn [_]
+                                          {:hello "world"})}}})]
+    ["transit" (resource
+                {:produces "application/transit+json"
+                 :methods {:get {:response (fn [_]
+                                             {:hello "world"})}}})]]])
 
 (defn routes [app-js]
   ["/"
    [["" (resource
-         {:methods {:get {:produces "text/html"
-                          :response (fn [ctx]
+         {:produces "text/html"
+          :methods {:get {:response (fn [ctx]
                                       (html
                                        [:head
                                         [:title "My App"]]
@@ -24,13 +33,12 @@
                                          [:h2 "App to go here"]]
                                         (include-js app-js)]))}}})]
     ["public" (new-classpath-resource "public")]
-    ["about" (as-resource "About me...")]
     ["api" (swaggered api-routes
                       {:info {:title "API"
                               :version "1.0"
                               :description "My example API"}
-                       :basePath "/api"})]]
-   [true not-found]])
+                       :basePath "/api"})]
+    [true not-found]]])
 
 (defn start-server [port app-js]
   (listener (routes app-js) {:port port}))
