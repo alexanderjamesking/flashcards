@@ -1,0 +1,9 @@
+body {
+    background-color: #3273dc;
+    padding: 25px;
+}
+
+#app-section {
+    background-color: #fff;
+    border: 10px solid #00d1b2;
+}
