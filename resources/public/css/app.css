@@ -65,9 +65,14 @@ div.score {
     position:absolute;
     right:0px;
     border:5px solid #fff;
-    background: #fff
+    background: #fff;
 }
 
 div.score span {
     margin: 2px;
+}
+
+.button:hover {
+    border-color: transparent;
+    color:#fff;
 }

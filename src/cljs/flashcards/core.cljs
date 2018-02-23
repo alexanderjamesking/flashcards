@@ -67,13 +67,23 @@
         first)))
 
 (rf/reg-event-fx
+ :auto-move-to-next-question
+ (fn [_ [_ question]]
+   (let [current-question @(rf/subscribe [:current-question])]
+     (if (= (:question question) (:question current-question))
+       {:dispatch [:move-to-next-question]}
+       {}))))
+
+(rf/reg-event-fx
  :answer-question
  (fn [{:keys [db]} [_ guess]]
    (let [question @(rf/subscribe [:current-question])
          correct? (= (:correct-answer question) guess)]
      {:db (-> db
               (assoc-in [:current-question :answered] {:guess guess :correct? correct?})
-              (update-in [:score (if correct? :correct :incorrect)] inc))})))
+              (update-in [:score (if correct? :correct :incorrect)] inc))
+      :dispatch-later [{:ms 2500
+                        :dispatch [:auto-move-to-next-question question]}]})))
 
 (defn next-question-button []
   [:div

@@ -12,9 +12,3 @@
                           :app-js "/public/cljs/dev/main.js"}})
 
 (integrant.repl/set-prep! (constantly config))
-
-(defn start-figwheel! []
-  (figwheel-sidecar.repl-api/start-figwheel! "dev" "devcards-test"))
-
-(defn cljs-repl []
-  (figwheel-sidecar.repl-api/cljs-repl "dev"))
