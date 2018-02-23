@@ -7,9 +7,11 @@
                  [yada "1.2.11"]
                  [integrant "0.6.3"]
                  [hiccup "1.0.5"]
-                 [camel-snake-kebab "0.4.0"]]
+                 [camel-snake-kebab "0.4.0"]
+                 [environ "1.1.0"]]
   :plugins [[lein-cljsbuild "1.1.4" :exclusions [[org.clojure/clojure]]]
             [lein-doo "0.1.7"]]
+  :hooks [leiningen.cljsbuild]
   :profiles {:uberjar {:aot :all}
              :repl {:repl-options {:init-ns user}}
              :dev {:source-paths ["dev/src"]

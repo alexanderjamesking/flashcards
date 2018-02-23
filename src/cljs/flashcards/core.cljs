@@ -27,7 +27,7 @@
 (rf/reg-event-db
  :initialize
  (fn [_ _]
-   (let [questions (game/generate-n-questions cards 50 6)]
+   (let [questions (game/generate-n-questions cards 10 6)]
      {:questions questions
       :current-question nil
       :score {:correct 0
