@@ -35,7 +35,7 @@
                                         (include-css "/public/css/app.css")]
                                        [:body
                                         [:div#app
-                                         [:p "Loading"]]
+                                         [:p {:class "loading"} "Loading"]]
                                         (include-js app-js)
                                         (include-js "https://use.fontawesome.com/releases/v5.0.0/js/all.js")]))}}})]
     ["public" (new-classpath-resource "public")]

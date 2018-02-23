@@ -121,14 +121,16 @@
   [:div
    [:div {:class "app-section"}
     [:div {:class "container"}
+     (let [score @(rf/subscribe [:score])]
+       [:div {:class "score"}
+        [:span {:class "button is-info"} (:correct score)]
+        [:span {:class "button is-danger"} (:incorrect score)]])
+
      [:h1 {:class "title is-size-1"} "Flashcards"]
      [:h2 {:class "subtitle is-size-4"} "Флэшкарточки"]
      [:div {:class "content"}
 
-      (let [score @(rf/subscribe [:score])]
-        [:div {:class "score"}
-         [:span {:class "button is-success"} (:correct score)]
-         [:span {:class "button is-danger"} (:incorrect score)]])
+
 
       [render-card @(rf/subscribe [:current-question])]]]]
 

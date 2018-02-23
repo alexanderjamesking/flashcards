@@ -1,18 +1,27 @@
+body {
+    background-color: #3273dc;
+}
+
+.loading {
+    color:#fff;
+}
+
 #app {
-    border: 10px solid #3273dc;
+    border: 5px solid #3273dc;
 }
 
 .app-section {
     background-color: #fff;
-    border: 10px solid #00d1b2;
-    padding: 30px;
+    border: 6px solid #00d1b2;
+    padding: 10px;
 }
 
 footer {
-    padding: 25px 0 15px 0;
+    padding: 15px 0 15px 0;
     background-color: #3273dc;
     color: #fff;
     text-align: center;
+    font-size:0.8rem;
 }
 
 .content h1.question {
@@ -30,6 +39,10 @@ footer {
     color: #fff;
 }
 
+.hero-body {
+    padding: 1rem;
+}
+
 .orange { background-color: #FC4B43; }
 .pink { background-color: #DD2476; }
 .light-blue { background-color: #13A1D1; }
@@ -38,9 +51,7 @@ footer {
 .purple { background-color: #7E46B9; }
 
 button.next-question {
-    position:absolute;
-    right:15px;
-    bottom:15px;
+    float: right;
 }
 
 .content .correct-answer { color: #7E46B9; }
