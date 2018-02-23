@@ -2,7 +2,7 @@
   (:require [yada.yada :refer [listener resource as-resource swaggered]]
             [yada.resources.classpath-resource :refer [new-classpath-resource]]
             [hiccup.core :refer [html]]
-            [hiccup.page :refer [include-js]]))
+            [hiccup.page :refer [include-js include-css]]))
 
 (defn not-found [_]
   {:status 404
@@ -27,11 +27,17 @@
           :methods {:get {:response (fn [ctx]
                                       (html
                                        [:head
-                                        [:title "My App"]]
+                                        [:meta {:charset "utf-8"}]
+                                        [:meta {:name "viewport"
+                                                :content "width=device-width, initial-scale=1"}]
+                                        [:title "My App"]
+                                        (include-css "https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css")
+                                        (include-css "/public/css/app.css")]
                                        [:body
                                         [:div#app
-                                         [:h2 "App to go here"]]
-                                        (include-js app-js)]))}}})]
+                                         [:p "Loading"]]
+                                        (include-js app-js)
+                                        (include-js "https://use.fontawesome.com/releases/v5.0.0/js/all.js")]))}}})]
     ["public" (new-classpath-resource "public")]
     ["api" (swaggered api-routes
                       {:info {:title "API"

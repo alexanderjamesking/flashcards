@@ -1,9 +1,62 @@
-body {
-    background-color: #3273dc;
-    padding: 25px;
+#app {
+    border: 10px solid #3273dc;
 }
 
-#app-section {
+.app-section {
     background-color: #fff;
     border: 10px solid #00d1b2;
+    padding: 30px;
+}
+
+footer {
+    padding: 25px 0 15px 0;
+    background-color: #3273dc;
+    color: #fff;
+    text-align: center;
+}
+
+.content h1.question {
+    font-size: 2rem !important;
+    color: #fff;
+    padding-bottom: 15px;
+}
+
+.answer {
+    border-color: transparent;
+    color: #fff;
+}
+
+.result h4 {
+    color: #fff;
+}
+
+.orange { background-color: #FC4B43; }
+.pink { background-color: #DD2476; }
+.light-blue { background-color: #13A1D1; }
+.dark-blue { background-color: #08648E; }
+.green { background-color: #109E79; }
+.purple { background-color: #7E46B9; }
+
+button.next-question {
+    position:absolute;
+    right:15px;
+    bottom:15px;
+}
+
+.content .correct-answer { color: #7E46B9; }
+
+blockquote {
+    color: #000;
+}
+
+
+div.score {
+    position:absolute;
+    right:0px;
+    border:5px solid #fff;
+    background: #fff
+}
+
+div.score span {
+    margin: 2px;
 }

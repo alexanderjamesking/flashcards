@@ -3,9 +3,11 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.9.946"]
                  [reagent "0.7.0"]
+                 [re-frame "0.10.5"]
                  [yada "1.2.11"]
                  [integrant "0.6.3"]
-                 [hiccup "1.0.5"]]
+                 [hiccup "1.0.5"]
+                 [camel-snake-kebab "0.4.0"]]
   :plugins [[lein-cljsbuild "1.1.4" :exclusions [[org.clojure/clojure]]]
             [lein-doo "0.1.7"]]
   :profiles {:uberjar {:aot :all}
@@ -19,7 +21,8 @@
   :source-paths ["src/clj" "src/cljc"]
   :resource-paths ["resources"]
   :test-paths ["test/clj" "test/cljc"]
-  :figwheel {:server-logfile "target/figwheel_server.log"}
+  :figwheel {:server-logfile "target/figwheel_server.log"
+             :css-dirs ["resources/public/css"]}
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src/cljc" "src/cljs"]
                         :figwheel true
