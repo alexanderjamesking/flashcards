@@ -2,7 +2,8 @@
   (:require [reagent.core :as reagent]
             [re-frame.core :as rf]
             [flashcards.game :as game]
-            [camel-snake-kebab.core :as csk]))
+            [bidi.bidi :as bidi]
+            [pushy.core :as pushy]))
 
 (enable-console-print!)
 
@@ -24,27 +25,57 @@
 
 (def classes ["orange" "pink" "light-blue" "dark-blue" "green" "purple"])
 
+(def app-routes ["/" {"" :home
+                      "play" :play
+                      "end" :end}])
+
+(defn set-page! [match]
+  (println "set page" match)
+  (when match
+    (rf/dispatch [:navigate-to match])))
+
+(def history
+  (pushy/pushy set-page! (partial bidi/match-route app-routes)))
+
 (rf/reg-event-db
  :initialize
  (fn [_ _]
-   (let [questions (game/generate-n-questions cards 10 6)]
-     {:questions questions
+   (let [questions (game/generate-n-questions cards 3 6)]
+     {:route :home
+      :questions questions
       :current-question nil
       :score {:correct 0
               :incorrect 0}})))
 
+(defn navigate-to [route]
+  (rf/dispatch [:navigate-to route]))
+
 (rf/reg-event-db
+ :navigate-to
+ (fn [db [_ route]]
+   (pushy/set-token! history (bidi/path-for app-routes route))
+   (assoc db :route route)))
+
+(rf/reg-event-fx
  :move-to-next-question
- (fn [db _]
-   (let [questions (:questions db)]
-     (merge db
-            {:questions (rest questions)
-             :current-question (first questions)}))))
+ (fn [{:keys [db]} _]
+   (let [questions (:questions db)
+         current-question (first questions)]
+     (if current-question
+       {:db (merge db
+                   {:questions (rest questions)
+                    :current-question (first questions)})}
+       {:dispatch [:navigate-to :end]}))))
 
 (rf/reg-sub
  :current-question
  (fn [db _]
    (:current-question db)))
+
+(rf/reg-sub
+ :route
+ (fn [db _]
+   (or (:route db) :home)))
 
 (rf/reg-sub
  :score
@@ -120,7 +151,7 @@
        (for [[answer class] (map vector answers (take (count answers) (cycle (shuffle classes))))]
          [:button {:on-click (fn [] (rf/dispatch [:answer-question answer]))
                    :class (str "answer button " class)
-                   :key (csk/->kebab-case answer)} answer]))]]])
+                   :key answer} answer]))]]])
 
 (defn render-card [card]
   (if-let [answered (:answered card)]
@@ -140,13 +171,34 @@
      [:h2 {:class "subtitle is-size-4"} "Флэшкарточки"]
      [:div {:class "content"}
 
-
-
       [render-card @(rf/subscribe [:current-question])]]]]
 
    [:footer "© 2018 Tortue Ltd"]])
 
-(reagent/render-component [ui]
+(defn navigation-bar []
+  [:p
+   [:button {:on-click (partial navigate-to :home)} "home"]
+   [:button {:on-click (partial navigate-to :play)} "play"]
+   [:button {:on-click (partial navigate-to :end)} "end"]])
+
+(defmulti render-page identity)
+
+(defmethod render-page :home []
+  [:h1 "I am the home page"])
+
+(defmethod render-page :play []
+  [ui])
+
+(defmethod render-page :end []
+  [:h1 "I am the end game page"])
+
+(defn page []
+  [:div
+   [navigation-bar]
+   [render-page @(rf/subscribe [:route])]])
+
+
+(reagent/render-component [page]
                           (. js/document (getElementById "app")))
 
 (rf/dispatch-sync [:initialize])
