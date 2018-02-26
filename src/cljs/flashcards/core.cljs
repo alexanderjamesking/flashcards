@@ -28,27 +28,40 @@
 (def app-routes ["/" {"" :home
                       "play" :play
                       "end" :end}])
-
-(defn set-page! [match]
-  (println "set page" match)
-  (when match
-    (rf/dispatch [:navigate-to match])))
-
 (def history
-  (pushy/pushy set-page! (partial bidi/match-route app-routes)))
+  (pushy/pushy (fn [response]
+                 (println "this handler..." response))
+               (partial bidi/match-route app-routes)))
 
-(rf/reg-event-db
+(defn- initial-game-state []
+  (let [questions (game/generate-n-questions cards 3 6)]
+    {:route :home
+     :questions questions
+     :current-question nil
+     :score {:correct 0
+             :incorrect 0}}))
+
+(rf/reg-event-fx
  :initialize
- (fn [_ _]
-   (let [questions (game/generate-n-questions cards 3 6)]
-     {:route :home
-      :questions questions
-      :current-question nil
-      :score {:correct 0
-              :incorrect 0}})))
+ (fn [{:keys [db]} _]
+   {:db (initial-game-state)
+    :dispatch [:move-to-next-question]}))
+
+(rf/reg-event-fx
+ :reset-game-state
+ (fn [{:keys [db]}]
+   {:db (initial-game-state)
+    :dispatch-n [[:move-to-next-question]
+                 [:navigate-to :play]]}))
+
+(defn- parse-url [url]
+  (bidi/match-route app-routes url))
 
 (defn navigate-to [route]
   (rf/dispatch [:navigate-to route]))
+
+(defn- dispatch-route [matched-route]
+  (navigate-to (:handler matched-route)))
 
 (rf/reg-event-db
  :navigate-to
@@ -158,6 +171,11 @@
     [render-result card]
     [render-answers card]))
 
+(defn page-title []
+  [:div
+   [:h1 {:class "title is-size-1"} "Flashcards"]
+   [:h2 {:class "subtitle is-size-4"} "Флэшкарточки"]])
+
 (defn ui []
   [:div
    [:div {:class "app-section"}
@@ -167,8 +185,7 @@
         [:span {:class "button is-info"} (:correct score)]
         [:span {:class "button is-danger"} (:incorrect score)]])
 
-     [:h1 {:class "title is-size-1"} "Flashcards"]
-     [:h2 {:class "subtitle is-size-4"} "Флэшкарточки"]
+     [page-title]
      [:div {:class "content"}
 
       [render-card @(rf/subscribe [:current-question])]]]]
@@ -184,17 +201,31 @@
 (defmulti render-page identity)
 
 (defmethod render-page :home []
-  [:h1 "I am the home page"])
+  [:div
+   [:div {:class "app-section"}
+    [:div {:class "container"}
+     [page-title]
+
+     [:section {:class "section"}
+      [:button {:class "button"
+                :on-click (partial navigate-to :play)} "Play"]]]]])
 
 (defmethod render-page :play []
   [ui])
 
 (defmethod render-page :end []
-  [:h1 "I am the end game page"])
+  [:div
+   [:h1 "I am the end game page"]
+
+   [:p "test"]
+   [:button {:on-click (fn []
+
+
+                         (rf/dispatch-sync [:reset-game-state]))} "Play Again"]])
 
 (defn page []
   [:div
-   [navigation-bar]
+   ;;[navigation-bar]
    [render-page @(rf/subscribe [:route])]])
 
 
@@ -202,4 +233,5 @@
                           (. js/document (getElementById "app")))
 
 (rf/dispatch-sync [:initialize])
-(rf/dispatch-sync [:move-to-next-question])
+
+(pushy/start! (pushy/pushy dispatch-route parse-url))

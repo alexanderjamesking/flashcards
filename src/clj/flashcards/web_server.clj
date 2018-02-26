@@ -20,24 +20,29 @@
                  :methods {:get {:response (fn [_]
                                              {:hello "world"})}}})]]])
 
+(defn index [app-js]
+  (resource
+   {:produces "text/html"
+    :methods {:get {:response (fn [ctx]
+                                (html
+                                 [:head
+                                  [:meta {:charset "utf-8"}]
+                                  [:meta {:name "viewport"
+                                          :content "width=device-width, initial-scale=1"}]
+                                  [:title "My App"]
+                                  (include-css "/public/css/bulma.min.css")
+                                  (include-css "/public/css/app.css")]
+                                 [:body
+                                  [:div#app
+                                   [:p {:class "loading"} "Loading"]]
+                                  (include-js app-js)
+                                  (include-js "https://use.fontawesome.com/releases/v5.0.0/js/all.js")]))}}}))
+
 (defn routes [app-js]
   ["/"
-   [["" (resource
-         {:produces "text/html"
-          :methods {:get {:response (fn [ctx]
-                                      (html
-                                       [:head
-                                        [:meta {:charset "utf-8"}]
-                                        [:meta {:name "viewport"
-                                                :content "width=device-width, initial-scale=1"}]
-                                        [:title "My App"]
-                                        (include-css "https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css")
-                                        (include-css "/public/css/app.css")]
-                                       [:body
-                                        [:div#app
-                                         [:p {:class "loading"} "Loading"]]
-                                        (include-js app-js)
-                                        (include-js "https://use.fontawesome.com/releases/v5.0.0/js/all.js")]))}}})]
+   [["" (index app-js)]
+    ["play" (index app-js)]
+    ["end" (index app-js)]
     ["public" (new-classpath-resource "public")]
     ["api" (swaggered api-routes
                       {:info {:title "API"
