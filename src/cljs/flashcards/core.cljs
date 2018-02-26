@@ -34,7 +34,7 @@
                (partial bidi/match-route app-routes)))
 
 (defn- initial-game-state []
-  (let [questions (game/generate-n-questions cards 3 6)]
+  (let [questions (game/generate-n-questions cards 10 6)]
     {:route :home
      :questions questions
      :current-question nil

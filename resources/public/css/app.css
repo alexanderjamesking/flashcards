@@ -76,3 +76,7 @@ div.score span {
     border-color: transparent;
     color:#fff;
 }
+
+div.content {
+    margin-top: 1rem;
+}
