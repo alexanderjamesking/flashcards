@@ -27,10 +27,24 @@ footer {
 .content h1.question {
     font-size: 2rem !important;
     color: #fff;
-    padding-bottom: 15px;
 }
 
-.answer {
+.content h1.correct-answer {
+    margin-top:0;
+    font-size:2rem;
+    margin-bottom: 16px;
+    color: #fff;
+    text-align: center;
+}
+
+.content h1.wrong-answer {
+    text-align: center;
+    text-decoration: line-through;
+    margin: 0 0 16px 0;
+    color: #fff;
+}
+
+button.answer {
     border-color: transparent;
     color: #fff;
 }
@@ -54,12 +68,11 @@ button.next-question {
     float: right;
 }
 
-.content .correct-answer { color: #7E46B9; }
+
 
 blockquote {
     color: #000;
 }
-
 
 div.score {
     position:absolute;
@@ -79,4 +92,15 @@ div.score span {
 
 div.content {
     margin-top: 1rem;
+}
+
+.question {
+    text-align: center;
+}
+
+button.answer {
+    width: 90%;
+    margin: 0.3rem auto;
+    padding: 1rem;
+    font-size: 1.3rem;
 }

@@ -3,7 +3,8 @@
             [re-frame.core :as rf]
             [flashcards.game :as game]
             [bidi.bidi :as bidi]
-            [pushy.core :as pushy]))
+            [pushy.core :as pushy]
+            [clojure.set :refer [map-invert]]))
 
 (enable-console-print!)
 
@@ -34,12 +35,13 @@
                (partial bidi/match-route app-routes)))
 
 (defn- initial-game-state []
-  (let [questions (game/generate-n-questions cards 10 6)]
-    {:route :home
-     :questions questions
-     :current-question nil
-     :score {:correct 0
-             :incorrect 0}}))
+  {:route :home
+   :questions (-> (game/generate-n-questions cards 10 6)
+                  (concat (game/generate-n-questions (map-invert cards) 10 6))
+                  shuffle)
+   :current-question nil
+   :score {:correct 0
+           :incorrect 0}})
 
 (rf/reg-event-fx
  :initialize
@@ -126,7 +128,7 @@
      {:db (-> db
               (assoc-in [:current-question :answered] {:guess guess :correct? correct?})
               (update-in [:score (if correct? :correct :incorrect)] inc))
-      :dispatch-later [{:ms 2500
+      :dispatch-later [{:ms (if correct? 2200 5000)
                         :dispatch [:auto-move-to-next-question question]}]})))
 
 (defn next-question-button []
@@ -136,19 +138,19 @@
 
 (defn correct-answer [question]
   [:section {:class "hero is-success"}
-   [:div {:class "hero-body result"}
+   [:div {:class "hero-body result"
+          :on-click (fn [] (rf/dispatch [:move-to-next-question]))}
     [:h1 {:class "question"} (:question question)]
-    [:p (:correct-answer question)]
-    [next-question-button]]])
+    [:h1 {:class "question"} (:correct-answer question)]]])
 
 (defn wrong-answer [question]
   (let [[l1 l2] @(rf/subscribe [:lookup-wrong-answer (-> question :answered :guess)])]
-    [:section {:class "hero is-danger"}
+    [:section {:class "hero is-danger"
+               :on-click (fn [] (rf/dispatch [:move-to-next-question]))}
      [:div {:class "hero-body result"}
       [:h1 {:class "question"} (:question question)]
-      [:p (:correct-answer question)]
-      [:blockquote (str "You answered '" l2 "' " l1)]
-      [next-question-button]]]))
+      [:h1 {:class "correct-answer"} (:correct-answer question)]
+      [:h1 {:class "wrong-answer"} l2]]]))
 
 (defn render-result [question]
   (if (:correct? (:answered question))
@@ -163,7 +165,7 @@
      (let [answers (:possible-answers question)]
        (for [[answer class] (map vector answers (take (count answers) (cycle (shuffle classes))))]
          [:button {:on-click (fn [] (rf/dispatch [:answer-question answer]))
-                   :class (str "answer button " class)
+                   :class (str "answer " class)
                    :key answer} answer]))]]])
 
 (defn render-card [card]
@@ -208,20 +210,27 @@
 
      [:section {:class "section"}
       [:button {:class "button"
-                :on-click (partial navigate-to :play)} "Play"]]]]])
+                :on-click (partial navigate-to :play)} "Play"]]]]]  )
 
 (defmethod render-page :play []
   [ui])
 
 (defmethod render-page :end []
+
   [:div
-   [:h1 "I am the end game page"]
+   [:div {:class "app-section"}
+    [:div {:class "container"}
+     [page-title]
 
-   [:p "test"]
-   [:button {:on-click (fn []
+     [:section {:class "section"}
 
+      (let [score @(rf/subscribe [:score])]
+        [:div {:class "content"}
+         [:h3 (str "You scored "(:correct score) " / 20")]])
 
-                         (rf/dispatch-sync [:reset-game-state]))} "Play Again"]])
+      [:button {:class "button"
+                :on-click (fn []
+                            (rf/dispatch-sync [:reset-game-state]))} "Play Again"]]]]])
 
 (defn page []
   [:div
