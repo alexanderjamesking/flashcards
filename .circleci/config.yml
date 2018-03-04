@@ -42,15 +42,15 @@ jobs:
           key: v1-dependencies-{{ checksum "project.clj" }}
 
       # run tests!
-      #- run: lein test
+      - run: lein test
 
-      #- store_test_results:
-      #    path: target/test-reports
+      - store_test_results:
+          path: target/test-reports
 
       - run: lein uberjar
 
-      - run: docker build -t alexanderjamesking/flashcards:$CIRCLE_BRANCH .
+      #- run: docker build -t alexanderjamesking/flashcards:$CIRCLE_BRANCH .
 
-      - run: docker run --detach=true -p 5000:3000 -it --rm --name flashcards alexanderjamesking/flashcards:$CIRCLE_BRANCH; sleep 10
+      #- run: docker run --detach=true -p 5000:3000 -it --rm --name flashcards alexanderjamesking/flashcards:$CIRCLE_BRANCH; sleep 10
 
-      - run: curl --retry 30 --retry-delay 10 -v http://localhost:5000/api/status
+      #- run: curl --retry 30 --retry-delay 10 -v http://localhost:5000/api/status
