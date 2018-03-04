@@ -52,4 +52,5 @@
 (defn render-app []
   [render-view @(rf/subscribe [:route])])
 
-(pushy/start! (pushy/pushy dispatch-route parse-url))
+(defn init []
+  (pushy/start! (pushy/pushy dispatch-route parse-url)))

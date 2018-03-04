@@ -8,4 +8,5 @@
 (reagent/render-component [routes/render-app]
                           (. js/document (getElementById "app")))
 
+(routes/init)
 (game-logic/init)
