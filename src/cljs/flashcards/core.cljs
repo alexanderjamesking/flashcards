@@ -8,21 +8,66 @@
 
 (enable-console-print!)
 
-(def cards {"интересоваться" "to be interested in"
-            "волноваться" "to be worried"
-            "Мыться" "to wash"
-            "Гордиться" "to be proud"
-            "учиться" "to study"
-            "стараться" "to try"
-            "Готовиться" "to prepare"
-            "Улыбаться" "to smile"
-            "заниматься" "to be engaged in"
-            "смеяться" "to laugh"
-            "бояться" "to be afraid"
-            "Бриться" "to shave"
-            "Одеваться" "to dress"
-            "Раздеваться" "to undress"
-            "Надеяться" "to hope"})
+(def verbs-p1 {"арендова́ть" "to rent"
+               "боле́ть | заболе́ть" "to fall ill"
+               "бояться | побояться" "to be afraid of"
+               "брать | взять" "to take"
+               "ве́рить | пове́рить" "to believe"
+               "ви́деть | уви́деть" "to see"
+               "возвращат́ься | вернут́ься" "to return"
+               "волнова́ться | разволнова́ться" "to be worried"
+               "воскли́кнуть [pf.]" "to exclaim"
+               "вспоминат́ь | вспо́мнить" "to recall"
+               "встава́ть | встать" "to get up"
+               "встречат́ь | встре́тить" "to meet"
+               "встречат́ься | встре́титься" "to meet (reflexive)"
+               "входи́ть | войти́" "to enter (on foot)"
+               "выбират́ь | вы́брать" "to choose"
+               "выи́грывать | вы́играть" "to win"})
+
+(def verbs-p2 {"держат́ь" "to hold"
+               "жить [imp.]" "to live"
+               "дружи́ть [imp.]" "to become friends"
+               "вы́ключать | вы́ключить" "to turn off"
+               "выходи́ть | вы́йти" "to exit"
+               "говори́ть | сказа́ть" "to say"
+               "горе́ть | сгоре́ть" "to burn"
+               "гото́вить | пригото́вить" "to prepare, to cook"
+               "гуля́ть | погуля́ть" "to walk, to stroll"
+               "дава́ть | дать" "to give"
+               "дари́ть | подари́ть" "to present"
+               "де́лать | сде́лать" "to do, to make"
+               "добавля́ть | добав́ить" "to add, to contribute"
+               "догова́риваться | договори́ться" "to agree"
+               "доходи́ть | дойти́" "to reach (on foot)"
+               "ду́мать | поду́мать" "to think"
+               "есть | съесть" "to eat"
+               "е́здить, е́хать | пое́хать" "to go (by transport)"
+               "жале́ть | пожале́ть" "to feel sorry"
+               "ждать | подожда́ть" "to wait"
+               "забыва́ть | забы́ть" "to forget"
+               "за́втракать | поза́втракать" "to have breakfast"
+               "задават́ь | задат́ь" "to set, to pose (questions)"
+               "зака́зывать | заказа́ть" "to order, to reserve"
+               "закрыва́ть | закры́ть" "to close"})
+
+(def reflexive-verbs {"интересоваться" "to be interested in"
+                      "волноваться" "to be worried"
+                      "Мыться" "to wash"
+                      "Гордиться" "to be proud"
+                      "учиться" "to study"
+                      "стараться" "to try"
+                      "Готовиться" "to prepare"
+                      "Улыбаться" "to smile"
+                      "заниматься" "to be engaged in"
+                      "смеяться" "to laugh"
+                      "бояться" "to be afraid"
+                      "Бриться" "to shave"
+                      "Одеваться" "to dress"
+                      "Раздеваться" "to undress"
+                      "Надеяться" "to hope"})
+
+(def cards (merge verbs-p1 verbs-p2))
 
 (def classes ["orange" "pink" "light-blue" "dark-blue" "green" "purple"])
 
@@ -34,10 +79,13 @@
                  (println "this handler..." response))
                (partial bidi/match-route app-routes)))
 
+(def possible-answers 5)
+(def n-questions 1000)
+
 (defn- initial-game-state []
   {:route :home
-   :questions (-> (game/generate-n-questions cards 10 6)
-                  (concat (game/generate-n-questions (map-invert cards) 10 6))
+   :questions (-> (game/generate-n-questions cards n-questions possible-answers)
+                  (concat (game/generate-n-questions (map-invert cards) n-questions possible-answers))
                   shuffle)
    :current-question nil
    :score {:correct 0
@@ -175,8 +223,8 @@
 
 (defn page-title []
   [:div
-   [:h1 {:class "title is-size-1"} "Flashcards"]
-   [:h2 {:class "subtitle is-size-4"} "Флэшкарточки"]])
+   [:h1 {:class "title is-size-4"} "Flashcards"]
+   [:h2 {:class "subtitle is-size-5"} "Флэшкарточки"]])
 
 (defn ui []
   [:div
