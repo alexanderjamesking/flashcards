@@ -2,7 +2,8 @@
   (:require [yada.yada :refer [listener resource as-resource swaggered]]
             [yada.resources.classpath-resource :refer [new-classpath-resource]]
             [hiccup.core :refer [html]]
-            [hiccup.page :refer [include-js include-css]]))
+            [hiccup.page :refer [include-js include-css]]
+            [integrant.core :as ig]))
 
 (defn not-found [_]
   {:status 404
@@ -53,3 +54,10 @@
 
 (defn start-server [port app-js]
   (listener (routes app-js) {:port port}))
+
+(defmethod ig/init-key ::server [_ {:keys [port app-js]}]
+  (start-server port app-js))
+
+(defmethod ig/halt-key! ::server [_ server]
+  (let [close! (:close server)]
+    (close!)))
