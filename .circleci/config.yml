@@ -43,3 +43,5 @@ jobs:
 
       - store_test_results:
           path: target/test-reports
+
+      - run: docker build -t alexanderjamesking/flashcards .
