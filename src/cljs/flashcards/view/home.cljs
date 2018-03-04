@@ -1,9 +1,6 @@
 (ns flashcards.view.home
   (:require [re-frame.core :as rf])  )
 
-(defn navigate-to [route]
-  (rf/dispatch [:navigate-to route]))
-
 (defn view []
   [:div
    [:div {:class "app-section"}
@@ -14,4 +11,4 @@
 
      [:section {:class "section"}
       [:button {:class "button"
-                :on-click (partial navigate-to :play)} "Play"]]]]]  )
+                :on-click #(rf/dispatch [:navigate-to :play])} "Play"]]]]]  )

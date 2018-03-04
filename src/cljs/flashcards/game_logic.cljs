@@ -3,8 +3,6 @@
             [re-frame.core :as rf]
             [flashcards.content :as content]))
 
-
-
 (def cards (merge content/verbs-p1 content/verbs-p2))
 
 (defn- initial-game-state []
@@ -19,7 +17,7 @@
            :incorrect 0}})
 
 (rf/reg-event-fx
- :initialize
+ ::init
  (fn [{:keys [db]} _]
    {:db (initial-game-state)
     :dispatch [:move-to-next-question]}))
@@ -27,7 +25,7 @@
 (rf/reg-event-fx
  :reset-game-state
  (fn [{:keys [db]}]
-   {:db (initial-game-state)
+   {:db (merge db (initial-game-state))
     :dispatch-n [[:move-to-next-question]
                  [:navigate-to :play]]}))
 
@@ -51,13 +49,6 @@
  :score
  (fn [db _]
    (:score db)))
-
-(rf/reg-sub
- :next-question
- (fn [db _]
-   (-> (:questions db)
-       shuffle
-       first)))
 
 (rf/reg-sub
  :lookup-wrong-answer
@@ -87,4 +78,4 @@
                         :dispatch [:auto-move-to-next-question question]}]})))
 
 (defn init []
-  (rf/dispatch-sync [:initialize]))
+  (rf/dispatch-sync [::init]))

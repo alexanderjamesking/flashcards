@@ -10,36 +10,9 @@
             [pushy.core :as pushy]
             [clojure.set :refer [map-invert]]))
 
-
 (def app-routes ["/" {"" :home
                       "play" :play
                       "end" :end}])
-
-(def history
-  (pushy/pushy (fn [response]
-                 (println "this handler..." response))
-               (partial bidi/match-route app-routes)))
-
-(defn- parse-url [url]
-  (bidi/match-route app-routes url))
-
-(defn navigate-to [route]
-  (rf/dispatch [:navigate-to route]))
-
-(defn- dispatch-route [matched-route]
-  (navigate-to (:handler matched-route)))
-
-(rf/reg-event-db
- :navigate-to
- (fn [db [_ route]]
-   (pushy/set-token! history (bidi/path-for app-routes route))
-   (assoc db :route route)))
-
-(rf/reg-sub
- :route
- (fn [db _]
-   (or (:route db) :home)))
-
 
 (defmulti render-view identity)
 
@@ -49,8 +22,29 @@
 
 (defmethod render-view :play [] [play/view])
 
+(rf/reg-sub
+ ::route
+ (fn [db _]
+   (or (:route db) :home)))
+
 (defn render-app []
-  [render-view @(rf/subscribe [:route])])
+  [render-view @(rf/subscribe [::route])])
+
+(rf/reg-event-db
+ ::init
+ (fn [db [_ history]]
+   (assoc db :pushy history)))
+
+(rf/reg-event-db
+ :navigate-to
+ (fn [db [_ route]]
+   (pushy/set-token! (:pushy db) (bidi/path-for app-routes route))
+   (assoc db :route route)))
 
 (defn init []
-  (pushy/start! (pushy/pushy dispatch-route parse-url)))
+  (let [history (pushy/pushy (fn [matched-route]
+                               (rf/dispatch [:navigate-to (:handler matched-route)]))
+                             (fn [url]
+                               (bidi/match-route app-routes url)))]
+    (pushy/start! history)
+    (rf/dispatch-sync [::init history])))
