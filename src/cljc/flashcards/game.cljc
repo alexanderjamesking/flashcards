@@ -45,3 +45,9 @@
 (defn generate-n-questions [cards n n-possible-answers]
   (->> (take-n-random-cards cards n)
        (map (partial generate-question cards n-possible-answers))))
+
+
+(defn generate-shuffled-questions [cards n-questions n-possible-answers]
+  (-> (generate-n-questions cards n-questions n-possible-answers)
+      (concat (generate-n-questions (map-invert cards) n-questions n-possible-answers))
+      shuffle))
