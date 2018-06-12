@@ -14,7 +14,8 @@
             [lein-doo "0.1.7"]]
   :hooks [leiningen.cljsbuild]
   :profiles {:uberjar {:aot :all}
-             :repl {:repl-options {:init-ns user}}
+             :repl {:repl-options {:init-ns user
+                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}
              :dev {:source-paths ["dev/src"]
                    :resource-paths ["dev/resources"]
                    :dependencies [[integrant/repl "0.3.0"]
